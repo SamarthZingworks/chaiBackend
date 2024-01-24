@@ -26,11 +26,11 @@ const generateAccessAndRefreshTokens = async (userId) => {
       refreshToken,
     };
   } catch (err) {
-    //console.log(err)
-    // throw new ApiError(
-    //   500,
-    //   "Something went wrong while generate access and refresh Token"
-    // );
+    console.log(err)
+    throw new ApiError(
+      500,
+      "Something went wrong while generate access and refresh Token"
+    );
 
   }
 };
@@ -149,9 +149,6 @@ const Login = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
 
-
-
-
   return res
     .status(200)
     .cookie('accessToken', accessToken, options)
@@ -192,7 +189,7 @@ const LogOut = asyncHandler(async (req, res) => {
 
 
 const refreshAccessToken = asyncHandler(async (req,res)=>{
-  let IncomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken
+  let IncomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
   if(!IncomingRefreshToken){
     throw new ApiError(400, "Unauthorized request")
   }
@@ -210,24 +207,22 @@ try {
       throw new ApiError(401, "refresh token expired or used")
     }
   
-    const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(
+    const tokens = await generateAccessAndRefreshTokens(
       user._id.toString()
-    );
-  
+    );  
     return res
           .status(200)
-          .cookie('accessToken', accessToken, options)
-          .cookie('refreshToken', newRefreshToken, options)
+          .cookie('accessToken', tokens.accessToken, options)
+          .cookie('refreshToken', tokens.refreshToken, options)
           .json(
             new ApiResponse(200, {
-              accessToken,
-              newRefreshToken
+            tokens
             },
             "Access token refreshed"
             )
           )
 } catch (error) {
-  throw ApiError(500, error?.message, "Something went wrong")
+  throw new ApiError(500, error?.message, "Something went wrong")
 }
 })
 export { registerUser, Login, LogOut, refreshAccessToken };
