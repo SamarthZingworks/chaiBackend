@@ -352,3 +352,6 @@ export {
   updateUserAvatar,
   updateCoverImage
 };
+
+
+// counting of doc where channel name is name of channale 

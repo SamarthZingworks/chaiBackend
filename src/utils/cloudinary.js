@@ -16,6 +16,7 @@ const uploadOnCloudinary = async (localFilePath) =>{
        let res = await cloudinary.uploader.upload(localFilePath, {
             resource_type: 'auto'
         })
+        console.log(res)
         // file has been uploaded successfully
         // //console.log("File is uploaded on cloudinary", res.url);
         fs.unlinkSync(localFilePath) // remove the locally Saved Temprory File as the upload operation got failed
@@ -27,4 +28,15 @@ const uploadOnCloudinary = async (localFilePath) =>{
 }
 
 
-export {uploadOnCloudinary}
+// To-Do deleteImage
+const deleteImage=async(publicId)=>{
+    try {
+        let res = await cloudinary.uploader.destroy(publicId)
+        return res
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+export {uploadOnCloudinary, deleteImage}
